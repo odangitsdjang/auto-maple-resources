@@ -1,0 +1,30 @@
+*, x=0.069, y=0.178, frequency=1, skip=False, adjust=False
+    Buff
+    FlashJump, direction=right
+    ArrowStream, direction=right
+*, x=0.109, y=0.103, frequency=1, skip=False, adjust=False
+    FlashJump, direction=right
+    ArrowStream, direction=right
+*, x=0.253, y=0.069, frequency=1, skip=False, adjust=False
+    FlashJump, direction=right
+    ArrowStream, direction=right
+*, x=0.368, y=0.040, frequency=1, skip=False, adjust=False
+    FlashJump, direction=right
+    ArrowStream, direction=right
+*, x=0.575, y=0.103, frequency=1, skip=False, adjust=False
+    FlashJump, direction=right
+    ArrowStream, direction=right
+*, x=0.707, y=0.178, frequency=1, skip=False, adjust=False
+    FlashJump, direction=right
+    ArrowStream, direction=right
+*, x=0.839, y=0.178, frequency=1, skip=False, adjust=False
+    FlashJump, direction=right
+    ArrowStream, direction=right
+    FlashJump, direction=left
+    ArrowStream, direction=left
+*, x=0.586, y=0.178, frequency=1, skip=False, adjust=False
+    FlashJump, direction=left
+    ArrowStream, direction=left
+*, x=0.259, y=0.178, frequency=1, skip=False, adjust=False
+    FlashJump, direction=left
+    ArrowStream, direction=left

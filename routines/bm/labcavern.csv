@@ -1,0 +1,5 @@
+*, x=0.491, y=0.174, frequency=1, skip=False, adjust=False
+    Buff
+    ArrowStreamMulti, direction=left, attacks=2, repetitions=0
+*, x=0.534, y=0.174, frequency=1, skip=False, adjust=False
+    ArrowStreamMulti, direction=right, attacks=2, repetitions=0
