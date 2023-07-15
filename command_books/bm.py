@@ -122,8 +122,8 @@ class Buff(Command):
             # press(Key.VICIOUS_SHOT, 2)
             self.cd90_buff_time = now
         if self.cd120_buff_time == 0 or now - self.cd120_buff_time > 120:
-	        press(Key.QUIVER_BARRAGE, 2)
-            press(Key.STORM_OF_ARROWS, 2)
+            press(Key.QUIVER_BARRAGE, 2)
+            press(Key.ARROW_STREAM, 1)
             press(Key.INHUMAN_SPEED, 2)
             self.cd120_buff_time = now
 
