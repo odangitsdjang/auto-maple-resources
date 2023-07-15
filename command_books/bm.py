@@ -11,21 +11,26 @@ from src.common.vkeys import press, key_down, key_up
 class Key:
     # Movement
     JUMP = 'alt'
-    FLASH_JUMP = 'alt'
-    # ROPE_LIFT = "D"
+    ROPE_LIFT = "v"
     BLINK_SHOT = "n"
 
-
     # 90s Buffs
-    # CONCENTRATION = '1'
-    # VICIOUS_SHOT = 'w'
+    
 
     # 120s Buffs
     QUIVER_BARRAGE = "8"
     STORM_OF_ARROWS = '9'
-    INHUMAN_SPEED = "10"
+    INHUMAN_SPEED = "0"
+    EPIC_ADVENTURE = '-'
+    CONCENTRATION = '='
+
     # TOTEM = "6"
 
+    # 300s+ Buffs
+    MAPLE_WARRIOR = '5'
+    PHOENIX = "6"
+    SHARP_EYES = "7"
+    
     # 2 hour familiar juice 
     # JUICE = "4"
 
@@ -55,7 +60,7 @@ def step(direction, target):
             press(Key.JUMP, 3)
         elif direction == 'up':
             press(Key.JUMP, 1)
-    press(Key.FLASH_JUMP, num_presses)
+    press(Key.JUMP, num_presses)
 
 
 class Adjust(Command):
@@ -95,7 +100,9 @@ class Adjust(Command):
                 d_y = self.target[1] - config.player_pos[1]
                 if abs(d_y) > settings.adjust_tolerance / math.sqrt(2):
                     if d_y < 0:
-                        FlashJump('up').main()
+                        # stop moving
+                        time.sleep(utils.rand_float(0.04, 0.05))
+                        RopeLift().main()
                     else:
                         key_down('down')
                         time.sleep(utils.rand_float(0.04, 0.05))
@@ -108,25 +115,42 @@ class Adjust(Command):
 
 
 class Buff(Command):
-    def __init__(self):
+    def __init__(self, BlinkShot=False):
         super().__init__(locals())
-        self.cd90_buff_time = 0
+        # self.cd90_buff_time = 0
         self.cd120_buff_time = 0
-        
+        self.cd300_buff_time = 0
+        self.cd100_blinkshot = 0
+        self.blink_shot_on = BlinkShot     
 
     def main(self):
         now = time.time()
 
-        if self.cd90_buff_time == 0 or now - self.cd120_buff_time > 90:
-            # press(Key.CONCENTRATION, 2)
-            # press(Key.VICIOUS_SHOT, 2)
-            self.cd90_buff_time = now
+        # if self.cd90_buff_time == 0 or now - self.cd120_buff_time > 90:
+        #     # press(Key.CONCENTRATION, 2)
+        #     # press(Key.VICIOUS_SHOT, 2)
+        #     self.cd90_buff_time = now
         if self.cd120_buff_time == 0 or now - self.cd120_buff_time > 120:
-            press(Key.QUIVER_BARRAGE, 2)
-            press(Key.ARROW_STREAM, 1)
-            press(Key.INHUMAN_SPEED, 2)
+            press(Key.QUIVER_BARRAGE, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.STORM_OF_ARROWS, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.INHUMAN_SPEED, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
             self.cd120_buff_time = now
-
+        if self.cd300_buff_time == 0 or now - self.cd300_buff_time > 300:
+            press(Key.MAPLE_WARRIOR, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.PHOENIX, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.SHARP_EYES, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            self.cd300_buff_time = now
+        if self.blink_shot_on == "True" and (self.cd100_blinkshot == 0 or now - self.cd100_blinkshot > 100):
+            BlinkShot('up').main()
+            BlinkShot('down').main()
+            time.sleep(utils.rand_float(0.15, 0.2))
+            self.cd100_blinkshot = now
 
 class ArrowStream(Command):
     """ Performs Arrow Stream attack """
@@ -153,7 +177,8 @@ class ArrowStreamMulti(Command):
         press(self.direction, 1)
         time.sleep(utils.rand_float(0.04, 0.05))
         for _ in range(self.repetitions):
-            press(Key.ARROW_STREAM, attacks)
+            press(Key.ARROW_STREAM, self.attacks)
+            time.sleep(utils.rand_float(0.05, 0.07))
         time.sleep(0.1)
 
 
@@ -165,7 +190,7 @@ class FlashJump(Command):
         self.direction = settings.validate_arrows(direction)
 
     def main(self):
-        if self.direction.upper() != "LEFT" or self.direction.upper() != "RIGHT":
+        if self.direction.upper() != "LEFT" and self.direction.upper() != "RIGHT":
             return
         key_down(self.direction)
         time.sleep(utils.rand_float(0.1, 0.15))
@@ -195,27 +220,29 @@ class JumpAtt(Command):
         for _ in range(self.repetitions):
             press(Key.JUMP, 1)
             time.sleep(utils.rand_float(0.04, 0.05))
-            press(Key.ARROW_STREAM, attacks)
+            press(Key.ARROW_STREAM, self.attacks)
             time.sleep(utils.rand_float(0.2, 0.3))
         time.sleep(0.1)
 
-
 class FlashJumpAtt(Command):
     """ flash jump arrow stream, only works with two directions: right or left"""
-    def __init(self, direction):
+    def __init__(self, direction, times=1):
         super().__init__(locals())
         self.direction = settings.validate_arrows(direction)
+        self.times = int(times)
 
     def main(self):
-        if self.direction.upper() != "LEFT" or self.direction.upper() != "RIGHT":
+        if self.direction != "left" and self.direction != "right":
             return
+        
         key_down(self.direction)
-        time.sleep(utils.rand_float(0.1, 0.15))
-        press(Key.JUMP, 2)
-        time.sleep(utils.rand_float(0.1, 0.2))
-        press(Key.ARROW_STREAM, 1)
-        time.sleep(utils.rand_float(0.4, 0.5))
+        for i in range(self.times):
+            print("loop ", i)
+            time.sleep(utils.rand_float(0.1, 0.15))
+            press(Key.JUMP, 2)
 
+            press(Key.ARROW_STREAM, 1)
+            time.sleep(utils.rand_float(0.3, 0.5))
         key_up(self.direction)
 
 
@@ -229,21 +256,36 @@ class BlinkShot(Command):
         key_down(self.direction)
         time.sleep(utils.rand_float(0.1, 0.15))
         press(Key.BLINK_SHOT, 2)
-        key_down(self.direction)
+        key_up(self.direction)
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+class JumpUp(Command):
+    """ Jumps up"""
+
+    def __init__(self, direction=None):
+        super().__init__(locals())
+        if direction is None:
+            self.direction = direction
+        else:
+            self.direction = settings.validate_horizontal_arrows(direction)
+
+    def main(self):
+        time.sleep(utils.rand_float(0.1, 0.15))
+        press(Key.JUMP, 1)
+        time.sleep(utils.rand_float(0.1, 0.15))
+        press("up", 1)
+        time.sleep(utils.rand_float(0.1, 0.15))
+        press("up", 1)
         time.sleep(utils.rand_float(0.1, 0.15))
 
 
-# class RopeLift(Command):
-#     """ Sets up / uses the 5th Job RopeLift skill - direction not affected"""
+class RopeLift(Command):
+    """ Sets up / uses the 5th Job RopeLift skill - direction not affected"""
 
-#     def __init__(self, direction=None):
-#         super().__init__(locals())
-#         if direction is None:
-#             self.direction = direction
-#         else:
-#             self.direction = settings.validate_horizontal_arrows(direction)
+    def __init__(self):
+        super().__init__(locals())
 
-#     def main(self):
-#         time.sleep(utils.rand_float(0.1, 0.15))
-#         press(Key.ROPE_LIFT, 2)
-#         time.sleep(utils.rand_float(0.1, 0.15))
+    def main(self):
+        time.sleep(utils.rand_float(0.1, 0.15))
+        press(Key.ROPE_LIFT, 2)
+        time.sleep(utils.rand_float(0.1, 0.15))
