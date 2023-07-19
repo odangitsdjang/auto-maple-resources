@@ -1,0 +1,5 @@
+*, x=0.040, y=0.178, frequency=1, skip=False, adjust=False
+    Buff, BlinkShot=False
+    FlashJumpAtt, direction=right, times=5
+*, x=0.971, y=0.178, frequency=1, skip=False, adjust=False
+    FlashJumpAtt, direction=left, times=5

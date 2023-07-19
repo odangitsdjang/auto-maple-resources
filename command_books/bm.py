@@ -17,19 +17,20 @@ class Key:
     # 90s Buffs
     
 
-    # 120s Buffs
+    # 120s Buffs First Rotation
     QUIVER_BARRAGE = "8"
-    STORM_OF_ARROWS = '9'
     INHUMAN_SPEED = "0"
-    EPIC_ADVENTURE = '-'
     CONCENTRATION = '='
+
+    # 120s Buff Second Rotation (balance out damage)
+    STORM_OF_ARROWS = '9'
+    EPIC_ADVENTURE = '-'
+    VICIOUS_SHOT = "o"
 
     # TOTEM = "6"
 
     # 300s+ Buffs
-    MAPLE_WARRIOR = '5'
     PHOENIX = "6"
-    SHARP_EYES = "7"
     
     # 2 hour familiar juice 
     # JUICE = "4"
@@ -37,6 +38,7 @@ class Key:
     # Skills
     ARROW_STREAM = "shift"
     HURRICANE = 'a'
+    GRITTY_GUST = "q"
 
 
 #########################
@@ -118,7 +120,8 @@ class Buff(Command):
     def __init__(self, BlinkShot=False):
         super().__init__(locals())
         # self.cd90_buff_time = 0
-        self.cd120_buff_time = 0
+        self.cd120_first_rotation = 0
+        self.cd120_second_rotation = time.time() - 60
         self.cd300_buff_time = 0
         self.cd100_blinkshot = 0
         self.blink_shot_on = BlinkShot     
@@ -130,20 +133,27 @@ class Buff(Command):
         #     # press(Key.CONCENTRATION, 2)
         #     # press(Key.VICIOUS_SHOT, 2)
         #     self.cd90_buff_time = now
-        if self.cd120_buff_time == 0 or now - self.cd120_buff_time > 120:
+        if self.cd120_first_rotation == 0 or now - self.cd120_first_rotation > 120:
+            time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.QUIVER_BARRAGE, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
-            press(Key.STORM_OF_ARROWS, 1)
+            press(Key.CONCENTRATION, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.INHUMAN_SPEED, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
-            self.cd120_buff_time = now
+            self.cd120_first_rotation = now
+        if now - self.cd120_second_rotation > 120:
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.STORM_OF_ARROWS, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.EPIC_ADVENTURE, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.VICIOUS_SHOT, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            self.cd120_second_rotation = now
         if self.cd300_buff_time == 0 or now - self.cd300_buff_time > 300:
-            press(Key.MAPLE_WARRIOR, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.PHOENIX, 1)
-            time.sleep(utils.rand_float(0.15, 0.2))
-            press(Key.SHARP_EYES, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             self.cd300_buff_time = now
         if self.blink_shot_on == "True" and (self.cd100_blinkshot == 0 or now - self.cd100_blinkshot > 100):
@@ -164,6 +174,15 @@ class ArrowStream(Command):
         time.sleep(utils.rand_float(0.04, 0.05))
         press(Key.ARROW_STREAM, 1)
 
+class GrittyGust(Command):
+    def main(self):
+        press(Key.GRITTY_GUST)
+
+class JumpGritty(Command):
+    def main(self):
+        press(Key.GRITTY_GUST)
+        time.sleep(utils.rand_float(0.04, 0.05))
+        press(Key.GRITTY_GUST)
 
 class ArrowStreamMulti(Command):
     def __init__(self, direction, attacks=2, repetitions=1):
@@ -218,7 +237,7 @@ class JumpAtt(Command):
         press(self.direction, 1)
         time.sleep(utils.rand_float(0.04, 0.05))
         for _ in range(self.repetitions):
-            press(Key.JUMP, 1)
+            press(Key.JUMP)
             time.sleep(utils.rand_float(0.04, 0.05))
             press(Key.ARROW_STREAM, self.attacks)
             time.sleep(utils.rand_float(0.2, 0.3))
@@ -239,10 +258,10 @@ class FlashJumpAtt(Command):
         for i in range(self.times):
             print("loop ", i)
             time.sleep(utils.rand_float(0.1, 0.15))
-            press(Key.JUMP, 2)
+            press(Key.JUMP, 2) 
 
             press(Key.ARROW_STREAM, 1)
-            time.sleep(utils.rand_float(0.3, 0.5))
+            time.sleep(utils.rand_float(0.1, 0.2))
         key_up(self.direction)
 
 
