@@ -11,12 +11,13 @@ from src.common.vkeys import press, key_down, key_up
 class Key:
     # Movement
     JUMP = 'alt'
+    HARVEST = "space"
+
     ROPE_LIFT = "v"
     BLINK_SHOT = "n"
-
-    # 90s Buffs
-    
-
+    GRITTY = "q"
+    ARROW_BLAST = "d"
+    ERDA_FOUNTAIN = "7"
     # 120s Buffs First Rotation
     QUIVER_BARRAGE = "8"
     INHUMAN_SPEED = "0"
@@ -160,6 +161,7 @@ class Buff(Command):
             BlinkShot('down').main()
             time.sleep(utils.rand_float(0.15, 0.2))
             self.cd100_blinkshot = now
+        time.sleep(utils.rand_float(0.05, 0.07))
 
 class ArrowStream(Command):
     """ Performs Arrow Stream attack """
@@ -233,6 +235,7 @@ class JumpAtt(Command):
             time.sleep(utils.rand_float(0.2, 0.3))
         time.sleep(0.1)
 
+# Timing optimized
 class FlashJumpAtt(Command):
     """ flash jump arrow stream, only works with two directions: right or left"""
     def __init__(self, direction, times=1):
@@ -289,4 +292,35 @@ class RopeLift(Command):
     def main(self):
         time.sleep(utils.rand_float(0.1, 0.15))
         press(Key.ROPE_LIFT, 2)
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+class GrittyGust(Command):
+    def main(self):
+        time.sleep(utils.rand_float(0.1, 0.15))
+        press(Key.GRITTY, 1)
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+# Timing not optimized
+class ArrowTurret(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_arrows(direction)
+
+    def main(self):
+        press(self.direction, 1, down_time=0.2)
+        time.sleep(utils.rand_float(0.1, 0.15))
+        key_down(Key.ARROW_BLAST)
+        time.sleep(utils.rand_float(1.2, 1.3))
+        press(Key.HARVEST, 1, down_time=0.3)
+
+        key_up(Key.ARROW_BLAST)
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+class ErdaFountain(Command):
+    def main(self):
+        key_down("down")
+        time.sleep(utils.rand_float(0.4, 0.5))
+        press(Key.ERDA_FOUNTAIN, 1, down_time=0.3)
+
+        key_up("down")
         time.sleep(utils.rand_float(0.1, 0.15))
