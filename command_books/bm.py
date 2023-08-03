@@ -38,7 +38,6 @@ class Key:
     # Skills
     ARROW_STREAM = "shift"
     HURRICANE = 'a'
-    GRITTY_GUST = "q"
 
 
 #########################
@@ -104,7 +103,7 @@ class Adjust(Command):
                     if d_y < 0:
                         # stop moving
                         time.sleep(utils.rand_float(0.04, 0.05))
-                        RopeLift().main()
+                        JumpUp().main()
                     else:
                         key_down('down')
                         time.sleep(utils.rand_float(0.04, 0.05))
@@ -174,15 +173,6 @@ class ArrowStream(Command):
         time.sleep(utils.rand_float(0.04, 0.05))
         press(Key.ARROW_STREAM, 1)
 
-class GrittyGust(Command):
-    def main(self):
-        press(Key.GRITTY_GUST)
-
-class JumpGritty(Command):
-    def main(self):
-        press(Key.GRITTY_GUST)
-        time.sleep(utils.rand_float(0.04, 0.05))
-        press(Key.GRITTY_GUST)
 
 class ArrowStreamMulti(Command):
     def __init__(self, direction, attacks=2, repetitions=1):
@@ -237,7 +227,7 @@ class JumpAtt(Command):
         press(self.direction, 1)
         time.sleep(utils.rand_float(0.04, 0.05))
         for _ in range(self.repetitions):
-            press(Key.JUMP)
+            press(Key.JUMP, 1)
             time.sleep(utils.rand_float(0.04, 0.05))
             press(Key.ARROW_STREAM, self.attacks)
             time.sleep(utils.rand_float(0.2, 0.3))
@@ -255,13 +245,12 @@ class FlashJumpAtt(Command):
             return
         
         key_down(self.direction)
-        for i in range(self.times):
-            print("loop ", i)
+        for _ in range(self.times):
             time.sleep(utils.rand_float(0.1, 0.15))
-            press(Key.JUMP, 2) 
-
+            press(Key.JUMP, 1, down_time=0.15, up_time=0.05)
+            press(Key.JUMP, 1, up_time=0.05) 
             press(Key.ARROW_STREAM, 1)
-            time.sleep(utils.rand_float(0.1, 0.2))
+            time.sleep(utils.rand_float(0.4, 0.45))
         key_up(self.direction)
 
 
@@ -281,19 +270,12 @@ class BlinkShot(Command):
 class JumpUp(Command):
     """ Jumps up"""
 
-    def __init__(self, direction=None):
-        super().__init__(locals())
-        if direction is None:
-            self.direction = direction
-        else:
-            self.direction = settings.validate_horizontal_arrows(direction)
-
     def main(self):
         time.sleep(utils.rand_float(0.1, 0.15))
         press(Key.JUMP, 1)
         time.sleep(utils.rand_float(0.1, 0.15))
         press("up", 1)
-        time.sleep(utils.rand_float(0.1, 0.15))
+        time.sleep(utils.rand_float(0.03, 0.05))
         press("up", 1)
         time.sleep(utils.rand_float(0.1, 0.15))
 
