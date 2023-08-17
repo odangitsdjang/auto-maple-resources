@@ -104,7 +104,7 @@ class Adjust(Command):
                     if d_y < 0:
                         # stop moving
                         time.sleep(utils.rand_float(0.04, 0.05))
-                        JumpUp().main()
+                        FlashJump("up").main() # Note: Up Jump skill needs to be customized in skill menu to be standard key with other classes
                     else:
                         key_down('down')
                         time.sleep(utils.rand_float(0.04, 0.05))
@@ -123,7 +123,7 @@ class Buff(Command):
         self.cd120_first_rotation = 0
         self.cd120_second_rotation = time.time() - 60
         self.cd300_buff_time = 0
-        self.cd100_blinkshot = 0
+        self.cd60_blinkshot = 0
         self.blink_shot_on = BlinkShot     
 
     def main(self):
@@ -156,11 +156,11 @@ class Buff(Command):
             press(Key.PHOENIX, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             self.cd300_buff_time = now
-        if self.blink_shot_on == "True" and (self.cd100_blinkshot == 0 or now - self.cd100_blinkshot > 100):
+        if self.blink_shot_on == "True" and (self.cd60_blinkshot == 0 or now - self.cd60_blinkshot > 60):
             BlinkShot('up').main()
             BlinkShot('down').main()
             time.sleep(utils.rand_float(0.15, 0.2))
-            self.cd100_blinkshot = now
+            self.cd60_blinkshot = now
         time.sleep(utils.rand_float(0.05, 0.07))
 
 class ArrowStream(Command):
@@ -201,8 +201,6 @@ class FlashJump(Command):
         self.direction = settings.validate_arrows(direction)
 
     def main(self):
-        if self.direction.upper() != "LEFT" and self.direction.upper() != "RIGHT":
-            return
         key_down(self.direction)
         time.sleep(utils.rand_float(0.1, 0.15))
         press(Key.JUMP, 2)
@@ -307,11 +305,11 @@ class ArrowTurret(Command):
         self.direction = settings.validate_arrows(direction)
 
     def main(self):
-        press(self.direction, 1, down_time=0.2)
+        press(self.direction, 1, down_time=0.25)
         time.sleep(utils.rand_float(0.1, 0.15))
         key_down(Key.ARROW_BLAST)
         time.sleep(utils.rand_float(1.2, 1.3))
-        press(Key.HARVEST, 1, down_time=0.3)
+        press(Key.HARVEST, 1, down_time=0.35)
 
         key_up(Key.ARROW_BLAST)
         time.sleep(utils.rand_float(0.1, 0.15))
@@ -323,4 +321,91 @@ class ErdaFountain(Command):
         press(Key.ERDA_FOUNTAIN, 1, down_time=0.3)
 
         key_up("down")
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+# Not tested
+class ArrowBlasterHold(Command):
+    def __init__(self, direction, hold_time_seconds=0):
+        super().__init__(locals())
+        self.direction = settings.validate_arrows(direction)
+        self.hold_time = float(hold_time_seconds)
+
+    def main(self):
+        press(self.direction, 1, down_time=0.15)
+        time.sleep(utils.rand_float(0.1, 0.15))
+        key_down(Key.ARROW_BLAST)
+        time.sleep(utils.rand_float(self.hold_time, self.hold_time*1.01))
+
+        key_up(Key.ARROW_BLAST)
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+# Not tested
+class HurricaneHold(Command):
+    def __init__(self, direction, hold_time_seconds=0):
+        super().__init__(locals())
+        self.direction = settings.validate_arrows(direction)
+        self.hold_time = float(hold_time_seconds)
+
+    def main(self):
+        press(self.direction, 1, down_time=0.15)
+        time.sleep(utils.rand_float(0.1, 0.15))
+        key_down(Key.HURRICANE)
+        time.sleep(utils.rand_float(self.hold_time, self.hold_time*1.01))
+
+        key_up(Key.HURRICANE)
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+# Not tested
+class HurricaneKeepHolding(Command):
+    def __init__(self, direction, hold_time_seconds=0):
+        super().__init__(locals())
+        self.direction = settings.validate_arrows(direction)
+        self.hold_time = float(hold_time_seconds)
+
+    def main(self):
+        press(self.direction, 1, down_time=0.15)
+        time.sleep(utils.rand_float(0.1, 0.15))
+        key_down(Key.HURRICANE)
+        time.sleep(utils.rand_float(self.hold_time, self.hold_time*1.01))
+
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+# Not tested (There is also built in "Fall")
+class JumpDownNoDelay(Command):
+    def main(self):
+        time.sleep(utils.rand_float(0.1, 0.15))
+        key_down("down")
+        press(Key.JUMP, 1)
+        key_up("down")
+
+# Not tested (There is also built in "Fall")
+class JumpDown(Command):
+    def main(self):
+        time.sleep(utils.rand_float(0.1, 0.15))
+        key_down("down")
+        press(Key.JUMP, 1)
+        key_up("down")
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+# Not tested
+# To be used while HurricaneKeepHolding, after JumpDownNoDelay and before HurricaneRelease
+class Spin(Command):
+    def __init__(self, direction, hold_time_seconds=0):
+        super().__init__(locals())
+        self.direction = settings.validate_arrows(direction)
+        self.hold_time = float(hold_time_seconds)
+        self.start_time = time.time()
+
+    def main(self):
+        curr_time = time.time()
+        while self.start_time < curr_time - self.hold_time:
+            press("left", down_time=0.06, up_time = 0.07)
+            press("right", down_time=0.06, up_time = 0.07)
+            curr_time = time.time()
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+# Not tested
+class HurricaneRelease(Command):
+    def main(self):
+        key_up(Key.HURRICANE)
         time.sleep(utils.rand_float(0.1, 0.15))
