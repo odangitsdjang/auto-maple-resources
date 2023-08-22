@@ -128,11 +128,13 @@ class Buff(Command):
 
     def main(self):
         now = time.time()
+        is_buff_cast = 0
 
         # if self.cd90_buff_time == 0 or now - self.cd120_buff_time > 90:
         #     # press(Key.CONCENTRATION, 2)
         #     # press(Key.VICIOUS_SHOT, 2)
         #     self.cd90_buff_time = now
+        
         if self.cd120_first_rotation == 0 or now - self.cd120_first_rotation > 120:
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.QUIVER_BARRAGE, 1)
@@ -142,6 +144,7 @@ class Buff(Command):
             press(Key.INHUMAN_SPEED, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             self.cd120_first_rotation = now
+            is_buff_cast = 1
         if now - self.cd120_second_rotation > 120:
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.STORM_OF_ARROWS, 1)
@@ -151,17 +154,22 @@ class Buff(Command):
             press(Key.VICIOUS_SHOT, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             self.cd120_second_rotation = now
+            is_buff_cast = 1
         if self.cd300_buff_time == 0 or now - self.cd300_buff_time > 300:
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.PHOENIX, 1)
-            time.sleep(utils.rand_float(0.15, 0.2))
+            time.sleep(utils.rand_float(0.05, 0.1))
             self.cd300_buff_time = now
+            is_buff_cast = 1
         if self.blink_shot_on == "True" and (self.cd60_blinkshot == 0 or now - self.cd60_blinkshot > 60):
+            time.sleep(utils.rand_float(0.15, 0.2))
             BlinkShot('up').main()
             BlinkShot('down').main()
-            time.sleep(utils.rand_float(0.15, 0.2))
+            time.sleep(utils.rand_float(0.1, 0.15))
             self.cd60_blinkshot = now
-        time.sleep(utils.rand_float(0.05, 0.07))
+        
+        if is_buff_cast:
+            time.sleep(utils.rand_float(0.1, 0.12))
 
 class ArrowStream(Command):
     """ Performs Arrow Stream attack """
@@ -251,7 +259,7 @@ class FlashJumpAtt(Command):
             press(Key.JUMP, 1, down_time=0.15, up_time=0.05)
             press(Key.JUMP, 1, up_time=0.05) 
             press(Key.ARROW_STREAM, 1)
-            time.sleep(utils.rand_float(0.4, 0.45))
+            time.sleep(utils.rand_float(0.39, 0.42))
         key_up(self.direction)
 
 
@@ -310,6 +318,7 @@ class ArrowTurret(Command):
         key_down(Key.ARROW_BLAST)
         time.sleep(utils.rand_float(1.2, 1.3))
         press(Key.HARVEST, 1, down_time=0.35)
+        press(Key.HARVEST, 1) # press again in case it didnt register before
 
         key_up(Key.ARROW_BLAST)
         time.sleep(utils.rand_float(0.1, 0.15))
