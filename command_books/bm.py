@@ -142,7 +142,7 @@ class Buff(Command):
             press(Key.CONCENTRATION, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.INHUMAN_SPEED, 1)
-            time.sleep(utils.rand_float(0.15, 0.2))
+            time.sleep(utils.rand_float(0.21, 0.25))
             self.cd120_first_rotation = now
             is_buff_cast = 1
         if now - self.cd120_second_rotation > 120:
@@ -152,7 +152,7 @@ class Buff(Command):
             press(Key.EPIC_ADVENTURE, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.VICIOUS_SHOT, 1)
-            time.sleep(utils.rand_float(0.15, 0.2))
+            time.sleep(utils.rand_float(0.21, 0.25))
             self.cd120_second_rotation = now
             is_buff_cast = 1
         if self.cd300_buff_time == 0 or now - self.cd300_buff_time > 300:
@@ -259,7 +259,7 @@ class FlashJumpAtt(Command):
             press(Key.JUMP, 1, down_time=0.15, up_time=0.05)
             press(Key.JUMP, 1, up_time=0.05) 
             press(Key.ARROW_STREAM, 1)
-            time.sleep(utils.rand_float(0.39, 0.42))
+            time.sleep(utils.rand_float(0.398, 0.415))
         key_up(self.direction)
 
 
