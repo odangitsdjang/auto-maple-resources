@@ -117,42 +117,49 @@ class Adjust(Command):
 
 
 class Buff(Command):
+    # Noticed that multiple threads of Buff are being created which creates a confusing log, but also creates a nice side effect of 
+    # buffing in random spots which may help avoid bot detection 
     def __init__(self, BlinkShot=False):
         super().__init__(locals())
-        # self.cd90_buff_time = 0
+        # bm is a 2 min dpm class, separate burst skills into two timers to elongate burst / mob more effectively
+        self.reset_timers(BlinkShot) 
+
+    def reset_timers(self, BlinkShot):
         self.cd120_first_rotation = 0
-        self.cd120_second_rotation = time.time() - 60
+        self.cd120_second_rotation = time.time() - 40 # always use 80 seconds after first rotation (quiver barrage lasts 40 sec)
         self.cd300_buff_time = 0
         self.cd60_blinkshot = 0
-        self.blink_shot_on = BlinkShot     
+        self.blink_shot_on = BlinkShot  
 
     def main(self):
         now = time.time()
         is_buff_cast = 0
 
-        # if self.cd90_buff_time == 0 or now - self.cd120_buff_time > 90:
-        #     # press(Key.CONCENTRATION, 2)
-        #     # press(Key.VICIOUS_SHOT, 2)
-        #     self.cd90_buff_time = now
-        
+        # resetting rotation timers if bot was off for a while (reloading does not reset time without this code - BUG?)
+        if now - self.cd120_first_rotation > 180:
+            self.reset_timers(BlinkShot=self.blink_shot_on)
+
+        print("first rotation timer: ", now - self.cd120_first_rotation)
+        print("second rotation timer: ", now - self.cd120_second_rotation)
         if self.cd120_first_rotation == 0 or now - self.cd120_first_rotation > 120:
             time.sleep(utils.rand_float(0.15, 0.2))
-            press(Key.QUIVER_BARRAGE, 1)
-            time.sleep(utils.rand_float(0.15, 0.2))
-            press(Key.CONCENTRATION, 1)
+            press(Key.STORM_OF_ARROWS, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.INHUMAN_SPEED, 1)
             time.sleep(utils.rand_float(0.21, 0.25))
+            press(Key.EPIC_ADVENTURE, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
             self.cd120_first_rotation = now
             is_buff_cast = 1
         if now - self.cd120_second_rotation > 120:
             time.sleep(utils.rand_float(0.15, 0.2))
-            press(Key.STORM_OF_ARROWS, 1)
-            time.sleep(utils.rand_float(0.15, 0.2))
-            press(Key.EPIC_ADVENTURE, 1)
+            press(Key.QUIVER_BARRAGE, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.VICIOUS_SHOT, 1)
             time.sleep(utils.rand_float(0.21, 0.25))
+            press(Key.CONCENTRATION, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            
             self.cd120_second_rotation = now
             is_buff_cast = 1
         if self.cd300_buff_time == 0 or now - self.cd300_buff_time > 300:
