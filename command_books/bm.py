@@ -182,6 +182,7 @@ class ArrowStream(Command):
         press(self.direction, 1)
         time.sleep(utils.rand_float(0.04, 0.05))
         press(Key.ARROW_STREAM, 1)
+        time.sleep(utils.rand_float(0.1, 0.12))
 
 
 class ArrowStreamMulti(Command):
@@ -239,7 +240,7 @@ class JumpAtt(Command):
             time.sleep(utils.rand_float(0.04, 0.05))
             press(Key.ARROW_STREAM, self.attacks)
             time.sleep(utils.rand_float(0.2, 0.3))
-        time.sleep(0.1)
+        time.sleep(utils.rand_float(0.1, 0.12))
 
 # Timing optimized
 class FlashJumpAtt(Command):
