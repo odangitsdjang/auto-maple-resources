@@ -182,25 +182,7 @@ class ArrowStream(Command):
         press(self.direction, 1)
         time.sleep(utils.rand_float(0.04, 0.05))
         press(Key.ARROW_STREAM, 1)
-        time.sleep(utils.rand_float(0.1, 0.12))
-
-
-class ArrowStreamMulti(Command):
-    def __init__(self, direction, attacks=2, repetitions=1):
-        super().__init__(locals())
-        self.direction = settings.validate_horizontal_arrows(direction)
-        self.attacks = int(attacks)
-        self.repetitions = int(repetitions)
-
-    def main(self):
-        time.sleep(utils.rand_float(0.04, 0.05))
-        press(self.direction, 1)
-        time.sleep(utils.rand_float(0.04, 0.05))
-        for _ in range(self.repetitions):
-            press(Key.ARROW_STREAM, self.attacks)
-            time.sleep(utils.rand_float(0.05, 0.07))
-        time.sleep(0.1)
-
+        time.sleep(utils.rand_float(0.25, 0.30))
 
 class FlashJump(Command):
     """Performs a flash jump in the given direction."""
@@ -240,7 +222,7 @@ class JumpAtt(Command):
             time.sleep(utils.rand_float(0.04, 0.05))
             press(Key.ARROW_STREAM, self.attacks)
             time.sleep(utils.rand_float(0.2, 0.3))
-        time.sleep(utils.rand_float(0.1, 0.12))
+        time.sleep(utils.rand_float(0.25, 0.30))
 
 # Timing optimized
 class FlashJumpAtt(Command):
