@@ -139,8 +139,8 @@ class Buff(Command):
         if now - self.cd120_first_rotation > 180:
             self.reset_timers(BlinkShot=self.blink_shot_on)
 
-        print("first rotation timer: ", now - self.cd120_first_rotation)
-        print("second rotation timer: ", now - self.cd120_second_rotation)
+        print("Time into first rotation timer: ", now - self.cd120_first_rotation)
+        print("Time into second rotation timer: ", now - self.cd120_second_rotation)
         if self.cd120_first_rotation == 0 or now - self.cd120_first_rotation > 120:
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.STORM_OF_ARROWS, 1)
@@ -356,17 +356,14 @@ class HurricaneHold(Command):
 
 # Not tested
 class HurricaneKeepHolding(Command):
-    def __init__(self, direction, hold_time_seconds=0):
+    def __init__(self, direction):
         super().__init__(locals())
         self.direction = settings.validate_arrows(direction)
-        self.hold_time = float(hold_time_seconds)
 
     def main(self):
         press(self.direction, 1, down_time=0.15)
         time.sleep(utils.rand_float(0.1, 0.15))
         key_down(Key.HURRICANE)
-        time.sleep(utils.rand_float(self.hold_time, self.hold_time*1.01))
-
         time.sleep(utils.rand_float(0.1, 0.15))
 
 # Not tested (There is also built in "Fall")
