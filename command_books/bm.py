@@ -28,14 +28,15 @@ class Key:
     EPIC_ADVENTURE = '-'
     VICIOUS_SHOT = "o"
 
+    # 3rd rotation
+    ARACHNID = "u"
+    FURY_OF_THE_WILD = "3"
+
     # TOTEM = "6"
 
-    # 300s+ Buffs
+    # 200s+ Buffs
     PHOENIX = "6"
     
-    # 2 hour familiar juice 
-    # JUICE = "4"
-
     # Skills
     ARROW_STREAM = "shift"
     HURRICANE = 'a'
@@ -125,9 +126,12 @@ class Buff(Command):
         self.reset_timers(BlinkShot) 
 
     def reset_timers(self, BlinkShot):
-        self.cd120_first_rotation = 0
+        self.cd120_first_rotation = 0 # Burst 1
+        # Burst 2
         self.cd120_second_rotation = time.time() - 40 # always use 80 seconds after first rotation (quiver barrage lasts 40 sec)
-        self.cd300_buff_time = 0
+        # Supplemental damage after Burst 1
+        self.cd120_third_rotation = time.time() - 90 # use 30 seconds after first rotation
+        self.cd200_buff_time = 0
         self.cd60_blinkshot = 0
         self.blink_shot_on = BlinkShot  
 
@@ -144,7 +148,7 @@ class Buff(Command):
         if self.cd120_first_rotation == 0 or now - self.cd120_first_rotation > 120:
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.STORM_OF_ARROWS, 1)
-            time.sleep(utils.rand_float(0.15, 0.2))
+            time.sleep(utils.rand_float(0.25, 0.28))
             press(Key.INHUMAN_SPEED, 1)
             time.sleep(utils.rand_float(0.21, 0.25))
             press(Key.EPIC_ADVENTURE, 1)
@@ -162,11 +166,20 @@ class Buff(Command):
             
             self.cd120_second_rotation = now
             is_buff_cast = 1
-        if self.cd300_buff_time == 0 or now - self.cd300_buff_time > 300:
+        if now - self.cd120_third_rotation > 120: 
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.ARACHNID, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.FURY_OF_THE_WILD, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            
+            self.cd120_third_rotation = now
+            is_buff_cast = 1
+        if self.cd200_buff_time == 0 or now - self.cd200_buff_time > 200:
             time.sleep(utils.rand_float(0.15, 0.2))
             press(Key.PHOENIX, 1)
-            time.sleep(utils.rand_float(0.05, 0.1))
-            self.cd300_buff_time = now
+            time.sleep(utils.rand_float(0.15, 0.2))
+            self.cd200_buff_time = now
             is_buff_cast = 1
         if self.blink_shot_on == "True" and (self.cd60_blinkshot == 0 or now - self.cd60_blinkshot > 60):
             time.sleep(utils.rand_float(0.15, 0.2))
@@ -338,7 +351,6 @@ class ArrowBlasterHold(Command):
         key_up(Key.ARROW_BLAST)
         time.sleep(utils.rand_float(0.1, 0.15))
 
-# Not tested
 class HurricaneHold(Command):
     def __init__(self, direction, hold_time_seconds=0):
         super().__init__(locals())
@@ -354,7 +366,6 @@ class HurricaneHold(Command):
         key_up(Key.HURRICANE)
         time.sleep(utils.rand_float(0.1, 0.15))
 
-# Not tested
 class HurricaneKeepHolding(Command):
     def __init__(self, direction):
         super().__init__(locals())
@@ -400,7 +411,6 @@ class Spin(Command):
             curr_time = time.time()
         time.sleep(utils.rand_float(0.1, 0.15))
 
-# Not tested
 class HurricaneRelease(Command):
     def main(self):
         key_up(Key.HURRICANE)
