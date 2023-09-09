@@ -16,16 +16,19 @@ class Key:
     ROPE_LIFT = "v"
     ERDA_FOUNTAIN = "7"
     
-    # 120s Buffs First Rotation
+    # 120s Buffs
     MAPLE_GODDESS_BLESSING = ""
     SHADOW_WALKER = ""
     SMOKE_SCREEN = ""
     LAST_RESORT = ""
     TERMS_AND_CONDITIONS = ""
+
+    # 180s buffs
+    DECENT_SHARP_EYES = ""
     # TOTEM = "6"
 
     # 300s+ Buffs
-    
+    MAPLE_WARRIOR = ""
     
     # 2 hour familiar juice 
     # JUICE = "4"
@@ -125,22 +128,25 @@ class Buff(Command):
     def __init__(self):
         super().__init__(locals())
         # self.cd90_buff_time = 0
-        self.cd120_first_rotation = 0
+        self.cd180_buff_time = 0
         self.cd300_buff_time = 0
 
     def main(self):
         now = time.time()
         is_buff_cast = 0
 
-        if self.cd120_first_rotation == 0 or now - self.cd120_first_rotation > 120:
+        if self.cd180_buff_time == 0 or now - self.cd180_buff_time > 180:
             time.sleep(utils.rand_float(0.15, 0.2))
-            self.cd120_first_rotation = now
-            is_buff_cast = 1
-        if self.cd300_first_rotation == 0 or now - self.cd300_first_rotation > 300:
+            press(Key.DECENT_SHARP_EYES, 1)
             time.sleep(utils.rand_float(0.15, 0.2))
-            self.cd300_first_rotation = now
+            self.cd180_buff_time = now
             is_buff_cast = 1
-
+        if self.cd300_buff_time == 0 or now - self.cd300_buff_time > 300:
+            time.sleep(utils.rand_float(0.15, 0.2))
+            press(Key.MAPLE_WARRIOR, 1)
+            time.sleep(utils.rand_float(0.15, 0.2))
+            self.cd300_buff_time = now
+            is_buff_cast = 1
         if is_buff_cast:
             time.sleep(utils.rand_float(0.1, 0.12))
 
@@ -173,7 +179,7 @@ class CruelStep(Command):
         time.sleep(utils.rand_float(0.15, 0.20))
 
 # Not tested, TODO: more direction combinations
-class SHADOW_ASSAULT(Command):
+class ShadowAssault(Command):
     """ Performs Shadow Assault attack """
     def __init__(self, direction):
         super().__init__(locals())
@@ -185,7 +191,14 @@ class SHADOW_ASSAULT(Command):
         time.sleep(utils.rand_float(0.04, 0.05))
         press(Key.CRUEL_STEP, 1)
         time.sleep(utils.rand_float(0.25, 0.30))
-        key_up(self.direction)   
+        key_up(self.direction) 
+
+# Not tested
+class DarkFlare(Command):
+     def main(self):
+        time.sleep(utils.rand_float(0.04, 0.05))
+        press(Key.DARK_FLARE, 1)
+        time.sleep(utils.rand_float(0.35, 0.40))
 
 # Not tested 
 class CruelStepMeso(Command):
@@ -208,9 +221,9 @@ class CruelStepMesoNoPreDelay(Command):
     def main(self):
         press(self.direction, 1)
         time.sleep(utils.rand_float(0.04, 0.05))
-        press(Key.CRUEL_STEP)
+        press(Key.CRUEL_STEP, 1)
         time.sleep(utils.rand_float(0.05, 0.07))
-        press(Key.MESO_EXPLOSION)
+        press(Key.MESO_EXPLOSION, 1)
         time.sleep(utils.rand_float(0.05, 0.10))       
 
 # Not tested 
@@ -222,10 +235,10 @@ class Arachnid(Command):
 # Not tested 
 class JumpAtt(Command):
     """ jump cruel step, only works with two directions: right or left"""
-    def __init__(self, direction, attacks=2, repetitions=1):
+    def __init__(self, direction, attacks_per_jump=1, repetitions=1):
         super().__init__(locals())
         self.direction = settings.validate_horizontal_arrows(direction)
-        self.attacks = int(attacks)
+        self.attacks = int(attacks_per_jump)
         self.repetitions = int(repetitions)
 
     def main(self):
@@ -235,8 +248,9 @@ class JumpAtt(Command):
         for _ in range(self.repetitions):
             press(Key.JUMP, 1)
             time.sleep(utils.rand_float(0.04, 0.05))
-            press(Key.CRUEL_STEP, self.attacks)
-            time.sleep(utils.rand_float(0.15, 0.20))
+            for _ in range(self.attacks):
+                press(Key.CRUEL_STEP, self.attacks)
+                time.sleep(utils.rand_float(0.15, 0.20))
         time.sleep(utils.rand_float(0.05, 0.10))
 
 # Not tested (There is also built in "Fall")
@@ -281,6 +295,23 @@ class FlashJumpAtt(Command):
         key_up(self.direction)
 
 
+class DoubleFlashJumpAtt(Command):
+    """ flash jump twice, cruel step """
+    def __init__(self, direction, times=1):
+        super().__init__(locals())
+        self.direction = settings.validate_arrows(direction)
+        self.times = int(times)
+
+    def main(self):
+        key_down(self.direction)
+        for _ in range(self.times):
+            time.sleep(utils.rand_float(0.1, 0.15))
+            press(Key.JUMP, 1, down_time=0.15, up_time=0.05)
+            press(Key.JUMP, 2, up_time=0.05) 
+            CruelStepMesoNoPreDelay(self.direction).main()
+            time.sleep(utils.rand_float(0.1, 0.12))
+        key_up(self.direction)
+
 class RopeLift(Command):
     """ Sets up / uses the 5th Job RopeLift skill - direction not affected"""
 
@@ -299,4 +330,16 @@ class ErdaFountain(Command):
         press(Key.ERDA_FOUNTAIN, 1, down_time=0.3)
 
         key_up("down")
+        time.sleep(utils.rand_float(0.1, 0.15))
+
+class JumpUp(Command):
+    """ Jumps up"""
+
+    def main(self):
+        time.sleep(utils.rand_float(0.1, 0.15))
+        press(Key.JUMP, 1)
+        time.sleep(utils.rand_float(0.1, 0.15))
+        press("up", 1)
+        time.sleep(utils.rand_float(0.03, 0.05))
+        press("up", 1)
         time.sleep(utils.rand_float(0.1, 0.15))
