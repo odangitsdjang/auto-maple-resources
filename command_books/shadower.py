@@ -193,14 +193,12 @@ class ShadowAssault(Command):
         time.sleep(utils.rand_float(0.25, 0.30))
         key_up(self.direction) 
 
-# Not tested
 class DarkFlare(Command):
      def main(self):
         time.sleep(utils.rand_float(0.04, 0.05))
         press(Key.DARK_FLARE, 1)
         time.sleep(utils.rand_float(0.35, 0.40))
 
-# Not tested 
 class CruelStepMeso(Command):
     """ Performs Cruel Step with meso explosion """
     def __init__(self, direction):
@@ -209,18 +207,13 @@ class CruelStepMeso(Command):
 
     def main(self):
         time.sleep(utils.rand_float(0.04, 0.05))
-        CruelStepMesoNoPreDelay(self.direction).main()
+        key_down(self.direction)
+        CruelStepMesoNoPreDelayNoDirection().main()
+        key_up(self.direction)
 
-# Not tested 
-class CruelStepMesoNoPreDelay(Command):
+class CruelStepMesoNoPreDelayNoDirection(Command):
     """ Performs Cruel Step with meso explosion """
-    def __init__(self, direction):
-        super().__init__(locals())
-        self.direction = settings.validate_arrows(direction)
-
     def main(self):
-        press(self.direction, 1)
-        time.sleep(utils.rand_float(0.04, 0.05))
         press(Key.CRUEL_STEP, 1)
         time.sleep(utils.rand_float(0.05, 0.07))
         press(Key.MESO_EXPLOSION, 1)
@@ -232,7 +225,6 @@ class Arachnid(Command):
     def main(self):
         press(Key.ARACHNID, 3)
 
-# Not tested 
 class JumpAtt(Command):
     """ jump cruel step, only works with two directions: right or left"""
     def __init__(self, direction, attacks_per_jump=1, repetitions=1):
@@ -270,13 +262,16 @@ class JumpDown(Command):
         key_up("down")
         time.sleep(utils.rand_float(0.1, 0.15))
 
-# Not tested 
 class JumpDownCruelStepMeso(Command):
     def main(self):
         JumpDownNoDelay().main()
         CruelStepMeso('down').main()
 
-# Not tested 
+class JumpUpCruelStepMeso(Command):
+    def main(self):
+        JumpUp().main()
+        CruelStepMesoNoPreDelayNoDirection().main()
+
 class FlashJumpAtt(Command):
     """ flash jump cruel step """
     def __init__(self, direction, times=1):
@@ -290,7 +285,7 @@ class FlashJumpAtt(Command):
             time.sleep(utils.rand_float(0.1, 0.15))
             press(Key.JUMP, 1, down_time=0.15, up_time=0.05)
             press(Key.JUMP, 1, up_time=0.05) 
-            CruelStepMesoNoPreDelay(self.direction).main()
+            CruelStepMesoNoPreDelayNoDirection().main()
             time.sleep(utils.rand_float(0.1, 0.12))
         key_up(self.direction)
 
@@ -308,7 +303,7 @@ class DoubleFlashJumpAtt(Command):
             time.sleep(utils.rand_float(0.1, 0.15))
             press(Key.JUMP, 1, down_time=0.15, up_time=0.05)
             press(Key.JUMP, 2, up_time=0.05) 
-            CruelStepMesoNoPreDelay(self.direction).main()
+            CruelStepMesoNoPreDelayNoDirection().main()
             time.sleep(utils.rand_float(0.1, 0.12))
         key_up(self.direction)
 
@@ -337,9 +332,10 @@ class JumpUp(Command):
 
     def main(self):
         time.sleep(utils.rand_float(0.1, 0.15))
-        press(Key.JUMP, 1)
+        key_down("up")
         time.sleep(utils.rand_float(0.1, 0.15))
-        press("up", 1)
+        press(Key.JUMP, 1)
         time.sleep(utils.rand_float(0.03, 0.05))
-        press("up", 1)
+        press(Key.JUMP, 1)
+        key_up("up")
         time.sleep(utils.rand_float(0.1, 0.15))
