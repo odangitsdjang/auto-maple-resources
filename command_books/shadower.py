@@ -46,6 +46,7 @@ class Key:
     # summons
     DARK_FLARE = ""
     SUDDEN_RAID = ""
+    SHADOW_VEIL = ""
     ERDA_FOUNTAIN = "7"
 
 
@@ -178,25 +179,36 @@ class CruelStep(Command):
         press(Key.CRUEL_STEP, 1)
         time.sleep(utils.rand_float(0.15, 0.20))
 
-# Not tested, TODO: more direction combinations
+# Not tested
 class ShadowAssault(Command):
     """ Performs Shadow Assault attack """
+    """ With + separated direction, e.g. 'left', 'left+up', 'right+down' """
     def __init__(self, direction):
         super().__init__(locals())
-        self.direction = settings.validate_arrows(direction)
+        self.direction = direction
 
     def main(self):
         time.sleep(utils.rand_float(0.04, 0.05))
-        key_down(self.direction)
-        time.sleep(utils.rand_float(0.04, 0.05))
-        press(Key.CRUEL_STEP, 1)
+        
+        dirs = self.direction.split("+")
+        for dir in dirs.split("+"):
+            key_down(dir)
+        press(Key.SHADOW_ASSAULT, 1)
         time.sleep(utils.rand_float(0.25, 0.30))
-        key_up(self.direction) 
+        for dir in dirs.split("+"):
+            key_up(dir)
 
 class DarkFlare(Command):
      def main(self):
         time.sleep(utils.rand_float(0.04, 0.05))
         press(Key.DARK_FLARE, 1)
+        time.sleep(utils.rand_float(0.35, 0.40))
+
+# Not tested
+class ShadowVeil(Command):
+     def main(self):
+        time.sleep(utils.rand_float(0.04, 0.05))
+        press(Key.SHADOW_VEIL, 1)
         time.sleep(utils.rand_float(0.35, 0.40))
 
 class CruelStepMeso(Command):
@@ -207,9 +219,7 @@ class CruelStepMeso(Command):
 
     def main(self):
         time.sleep(utils.rand_float(0.04, 0.05))
-        key_down(self.direction)
-        CruelStepMesoNoPreDelayNoDirection().main()
-        key_up(self.direction)
+        CruelStepMesoNoPreDelay(direction=self.direction).main()
 
 class CruelStepMesoNoPreDelayNoDirection(Command):
     """ Performs Cruel Step with meso explosion """
@@ -219,11 +229,27 @@ class CruelStepMesoNoPreDelayNoDirection(Command):
         press(Key.MESO_EXPLOSION, 1)
         time.sleep(utils.rand_float(0.05, 0.10))       
 
+class CruelStepMesoNoPreDelay(Command):
+    def __init__(self, direction):
+        super().__init__(locals())
+        self.direction = settings.validate_arrows(direction)
+
+    def main(self):
+        key_down(self.direction)
+        CruelStepMesoNoPreDelayNoDirection().main()
+        key_up(self.direction)
+    
 # Not tested 
 class Arachnid(Command):
     """Uses 'True Arachnid Reflection' once."""
     def main(self):
         press(Key.ARACHNID, 3)
+
+class SlidingJumpUpAtt(Command):
+    def main(self):
+        JumpUpNoDelay().main()
+        CruelStepMesoNoPreDelayNoDirection().main()
+
 
 class JumpAtt(Command):
     """ jump cruel step, only works with two directions: right or left"""
@@ -327,15 +353,19 @@ class ErdaFountain(Command):
         key_up("down")
         time.sleep(utils.rand_float(0.1, 0.15))
 
+
+class JumpUpNoDelay(Command):
+    def main(self):
+        key_down("up")
+        press(Key.JUMP, 1)
+        time.sleep(utils.rand_float(0.03, 0.05))
+        press(Key.JUMP, 1)
+        key_up("up")
+
 class JumpUp(Command):
     """ Jumps up"""
 
     def main(self):
         time.sleep(utils.rand_float(0.1, 0.15))
-        key_down("up")
-        time.sleep(utils.rand_float(0.1, 0.15))
-        press(Key.JUMP, 1)
-        time.sleep(utils.rand_float(0.03, 0.05))
-        press(Key.JUMP, 1)
-        key_up("up")
+        JumpUpNoDelay().main()
         time.sleep(utils.rand_float(0.1, 0.15))
