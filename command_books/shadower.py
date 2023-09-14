@@ -247,7 +247,7 @@ class Arachnid(Command):
 
 class SlidingJumpUpAtt(Command):
     def main(self):
-        JumpUpNoDelay().main()
+        JumpUp().main()
         CruelStepMesoNoPreDelayNoDirection().main()
 
 
@@ -329,7 +329,7 @@ class DoubleFlashJumpAtt(Command):
             time.sleep(utils.rand_float(0.1, 0.15))
             press(Key.JUMP, 1, down_time=0.15, up_time=0.05)
             press(Key.JUMP, 2, up_time=0.05) 
-            CruelStepMesoNoPreDelayNoDirection().main()
+            CruelStepMeso(direction=self.direction).main()
             time.sleep(utils.rand_float(0.1, 0.12))
         key_up(self.direction)
 
@@ -356,9 +356,8 @@ class ErdaFountain(Command):
 
 class JumpUpNoDelay(Command):
     def main(self):
-        key_down("up")
         press(Key.JUMP, 1)
-        time.sleep(utils.rand_float(0.03, 0.05))
+        key_down("up")
         press(Key.JUMP, 1)
         key_up("up")
 
